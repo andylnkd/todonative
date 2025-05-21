@@ -5,7 +5,6 @@ import { Platform } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -15,8 +14,10 @@ export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: '#fff',
         headerShown: true,
+        headerTitle: 'Innatus',
+        headerTitleAlign: 'center',
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         headerStyle: {
@@ -30,7 +31,7 @@ export default function TabLayout() {
           left: 20,
           right: 20,
           elevation: 5,
-          backgroundColor: Platform.OS === 'ios' ? 'rgba(255, 255, 255, 0.8)' : '#fff',
+          backgroundColor: '#23272f',
           borderRadius: 25,
           height: 65,
           shadowColor: '#000',
@@ -53,7 +54,6 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Record',
-          headerTitle: 'Voice Recorder',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="mic.fill" color={color} />,
         }}
       />
@@ -61,23 +61,13 @@ export default function TabLayout() {
         name="action-items"
         options={{
           title: 'Tasks',
-          headerTitle: 'Action Items',
           tabBarIcon: ({ color }) => <MaterialIcons name="assignment" size={28} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'History',
-          headerTitle: 'Recording History',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="clock.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
-          headerTitle: 'Your Profile',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,
         }}
       />

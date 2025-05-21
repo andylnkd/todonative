@@ -17,7 +17,10 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.ensemble.innatus"
+      "package": "com.ensemble.innatus",
+      "permissions": [
+        "com.google.android.gms.permission.AD_ID"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -44,7 +47,8 @@
       "router": {},
       "eas": {
         "projectId": "c40bea84-7d23-40c9-aa95-ca0bc0f6a0ad"
-      }
+      },
+      "googleClientId": "114343462056-0q6et65tbkacag8bbiqqdp3fv6830e3r.apps.googleusercontent.com"
     },
     "owner": "anupd"
   }

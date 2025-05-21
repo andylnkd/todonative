@@ -22,6 +22,7 @@ interface ActionItem {
   status: string;
   id: number;
   nextSteps: NextStep[];
+  date?: string;
 }
 
 interface Category {
@@ -104,6 +105,17 @@ export default function ActionItemsScreen() {
     setRefreshing(true);
   }, []);
 
+  // Sort categories and items by earliest date first
+  const sortedCategories = categories.map(category => ({
+    ...category,
+    items: category.items?.slice().sort((a, b) => {
+      if (a.date && b.date) {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }
+      return 0;
+    })
+  }));
+
   if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
@@ -139,14 +151,14 @@ export default function ActionItemsScreen() {
           </TouchableOpacity>
         </View>
 
-        {categories.length === 0 ? (
+        {sortedCategories.length === 0 ? (
           <Text style={styles.emptyText}>No action items found.</Text>
         ) : (
-          categories.map((category, index) => (
-            <View key={category.id ? category.id : category.name + '-' + index} style={styles.categorySection}>
+          sortedCategories.map((category, idx) => (
+            <View key={category.name + idx} style={styles.categorySection}>
               <Text style={styles.categoryTitle}>{category.name}</Text>
-              {category.items.map((item) => (
-                <View key={item.id} style={styles.card}>
+              {category.items.map((item, itemIdx) => (
+                <View key={item.actionItem + itemIdx} style={styles.card}>
                   <View style={styles.cardHeader}>
                     <View style={styles.categoryContainer}>
                       <Text style={styles.category}>{category.name}</Text>
@@ -324,5 +336,85 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 16,
     marginTop: 40,
+  },
+  voicePlateContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: Platform.OS === 'ios' ? 90 : 70,
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  voicePlateOuter: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#6a82fb',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.35,
+    shadowRadius: 32,
+    elevation: 18,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.7)',
+    marginBottom: 16,
+    backgroundColor: 'rgba(255,255,255,0.18)',
+  },
+  voicePlateOuterRecording: {
+    shadowColor: '#ff5f6d',
+    borderColor: '#fff',
+  },
+  voicePlateBlur: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 60,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  voicePlateGradient: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    borderRadius: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  voicePlateButton: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: 'rgba(0,0,0,0.12)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#fff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  micIcon: {
+    textShadowColor: 'rgba(0,0,0,0.18)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 8,
+  },
+  voicePlateLabel: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#333',
+    textAlign: 'center',
+    backgroundColor: 'rgba(255,255,255,0.85)',
+    paddingHorizontal: 22,
+    paddingVertical: 10,
+    borderRadius: 18,
+    overflow: 'hidden',
+    marginTop: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
 }); 

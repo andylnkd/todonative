@@ -3,7 +3,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import type { RecordingOptions } from 'expo-av/build/Audio';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Easing, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ActionItem {
   actionItem: string;
@@ -154,8 +154,9 @@ export default function HomePage() {
       console.log('Auth token obtained:', token ? 'Token exists' : 'No token');
 
       // Use your computer's IP address instead of localhost
-      // const API_URL = 'https://innatus.netlify.app:3000/api/mobile/process-audio'; // Replace with your computer's IP
-      const API_URL = 'http://10.0.0.33:3000/api/mobile/process-audio'; // Replace with your computer's IP
+      const API_URL = 'https://innatus.netlify.app/api/mobile/process-audio'; // Replace with your computer's IP
+
+      // const API_URL = 'http://10.0.0.93:3000/api/mobile/process-audio'; // Replace with your computer's IP
       console.log('Making request to:', API_URL);
       
       const response = await fetch(API_URL, {
@@ -208,9 +209,9 @@ export default function HomePage() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
-        {transcript ? (
-          <>
+      {transcript ? (
+        <>
+          <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent}>
             <View style={styles.transcriptContainer}>
               <Text style={styles.transcriptTitle}>Transcript</Text>
               <Text style={styles.transcriptText}>{transcript}</Text>
@@ -219,25 +220,19 @@ export default function HomePage() {
               <Text style={styles.actionItemsTitle}>Action Items</Text>
               {renderActionItems()}
             </View>
-          </>
-        ) : (
+          </ScrollView>
+        </>
+      ) : (
+        <View style={styles.centeredMicContainer}>
           <Text style={styles.placeholder}>
-            Tap the microphone below to start recording
+            Tap the microphone to start recording
           </Text>
-        )}
-      </ScrollView>
-
-      {/* Modern Voice Plate Record Button */}
-      <View pointerEvents={isProcessing ? 'none' : 'auto'} style={styles.voicePlateContainer}>
-        <Animated.View
-          style={[
-            styles.voicePlate,
-            isRecording && styles.voicePlateRecording,
-            { transform: [{ scale: isRecording ? glowAnim : 1 }] },
-          ]}
-        >
           <TouchableOpacity
-            style={styles.voicePlateButton}
+            style={[
+              styles.micButton,
+              isRecording && styles.micButtonRecording,
+              isProcessing && styles.micButtonDisabled,
+            ]}
             onPress={isRecording ? stopRecording : startRecording}
             activeOpacity={0.8}
             disabled={isProcessing}
@@ -247,20 +242,20 @@ export default function HomePage() {
             ) : (
               <MaterialIcons
                 name={isRecording ? 'stop' : 'mic'}
-                size={44}
+                size={80}
                 color="#fff"
               />
             )}
           </TouchableOpacity>
-        </Animated.View>
-        <Text style={styles.voicePlateLabel}>
-          {isProcessing
-            ? 'Processing...'
-            : isRecording
-            ? 'Recording... Tap to stop'
-            : 'Tap to record your voice'}
-        </Text>
-      </View>
+          <Text style={styles.voicePlateLabelLarge}>
+            {isProcessing
+              ? 'Processing...'
+              : isRecording
+              ? 'Recording... Tap to stop'
+              : 'Tap to record your voice'}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -331,58 +326,48 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 4,
   },
-  voicePlateContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: Platform.OS === 'ios' ? 90 : 70,
-    alignItems: 'center',
-    zIndex: 10,
-  },
-  voicePlate: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: 'rgba(66,133,244,0.95)',
+  centeredMicContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f7f8fa',
+  },
+  micButton: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#4285F4', // Modern blue
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 32,
     shadowColor: '#4285F4',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    elevation: 12,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.7)',
-    marginBottom: 12,
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 8,
   },
-  voicePlateRecording: {
-    backgroundColor: '#DC3545',
-    shadowColor: '#DC3545',
-    borderColor: '#fff',
+  micButtonRecording: {
+    backgroundColor: '#ff5f6d', // Red-ish when recording
+    shadowColor: '#ff5f6d',
   },
-  voicePlateButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(0,0,0,0.18)',
-    justifyContent: 'center',
-    alignItems: 'center',
+  micButtonDisabled: {
+    opacity: 0.6,
   },
-  voicePlateLabel: {
-    fontSize: 16,
-    fontWeight: '600',
+  voicePlateLabelLarge: {
+    fontSize: 20,
+    fontWeight: '700',
     color: '#333',
     textAlign: 'center',
-    backgroundColor: 'rgba(255,255,255,0.85)',
-    paddingHorizontal: 18,
-    paddingVertical: 8,
-    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 22,
     overflow: 'hidden',
-    marginTop: 2,
+    marginTop: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.10,
+    shadowRadius: 8,
+    elevation: 3,
   },
 });
